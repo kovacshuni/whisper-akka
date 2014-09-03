@@ -12,22 +12,19 @@ object Whisper {
   private val system = ActorSystem("my-actor-system")
 
   def main(args: Array[String]): Unit = {
-    println("Hello, world!")
-    val timeA = System.currentTimeMillis()
-
-    val whisperers = new ListBuffer[ActorRef]
     val gameOver = Promise[Boolean]()
     val lastWhisperer = system.actorOf(Props(classOf[LastWhisperer], gameOver), name = "last-whisperer")
     var latestWhisperer: ActorRef = lastWhisperer
     for (i <- NWhisperers to 1 by -1) {
       val newWhisperer = system.actorOf(Props(classOf[Whisperer], latestWhisperer), name = s"whisperer-$i")
-      whisperers += newWhisperer
       latestWhisperer = newWhisperer
     }
+    println("Starting...")
+    val timeA = System.currentTimeMillis()
 
     latestWhisperer ! 0
-
     Await.ready(gameOver.future, 3.0 seconds)
+
     println("Ended in " + (System.currentTimeMillis() - timeA) + " ms.")
     system.shutdown()
     system.awaitTermination(3.0 second)
