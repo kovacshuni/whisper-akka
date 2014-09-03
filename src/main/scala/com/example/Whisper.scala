@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 
 object Whisper {
 
-  private val NWhisperers = 100000
+  private val NWhisperers = 1000000
   private val system = ActorSystem("my-actor-system")
 
   def main(args: Array[String]): Unit = {
