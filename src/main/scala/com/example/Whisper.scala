@@ -34,7 +34,7 @@ object Whisper {
     system.awaitTermination(3.0 second)
   }
 
-  def main(args: Array[String]): Unit = {
+  def main3(args: Array[String]): Unit = {
     val firstWhisperer = Promise[Int]()
     var latestWhisperer = firstWhisperer
     for (i <- NWhisperers to 1 by -1) {
@@ -49,6 +49,29 @@ object Whisper {
 
     firstWhisperer.success(0)
     println(Await.result(latestWhisperer.future, 3.0 seconds))
+
+    println("Ended in " + (System.currentTimeMillis() - timeA) + " ms.")
+    ec.shutdown()
+    ec.awaitTermination(3, TimeUnit.SECONDS)
+    executor.shutdown()
+    executor.awaitTermination(3, TimeUnit.SECONDS)
+    system.shutdown()
+    system.awaitTermination(3.0 second)
+  }
+
+  def main(args: Array[String]): Unit = {
+    val firstWhispererPromise = Promise[Int]()
+    val firstWhisperer = firstWhispererPromise.future
+    var latestWhisperer = firstWhisperer
+    for (i <- NWhisperers to 1 by -1) {
+      val whisperer = latestWhisperer.map(n => n+1)
+      latestWhisperer = whisperer
+    }
+    println("Starting...")
+    val timeA = System.currentTimeMillis()
+
+    firstWhispererPromise.success(0)
+    println(Await.result(latestWhisperer, 3.0 seconds))
 
     println("Ended in " + (System.currentTimeMillis() - timeA) + " ms.")
     ec.shutdown()
