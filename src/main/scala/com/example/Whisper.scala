@@ -15,6 +15,9 @@ object Whisper {
   def main(args: Array[String]): Unit = {
     val nWhisperers = args(0).toLong
     val firstWhisperer = Promise[Int]()
+
+    println("Setting up futures...")
+    val timeA = System.currentTimeMillis()
     var latestWhisperer = firstWhisperer
     for (i <- nWhisperers to 1 by -1) {
       val whisperer = Promise[Int]()
@@ -23,13 +26,14 @@ object Whisper {
       }
       latestWhisperer = whisperer
     }
-    println("Starting...")
-    val timeA = System.currentTimeMillis()
+    println("Ended in " + (System.currentTimeMillis() - timeA) + " ms.")
+    println("Starting whispering...")
+    val timeB = System.currentTimeMillis()
 
     firstWhisperer.success(0)
     println(Await.result(latestWhisperer.future, 3.0 seconds))
 
-    println("Ended in " + (System.currentTimeMillis() - timeA) + " ms.")
+    println("Ended in " + (System.currentTimeMillis() - timeB) + " ms.")
     ec.shutdown()
     ec.awaitTermination(3, TimeUnit.SECONDS)
     executor.shutdown()
