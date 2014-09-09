@@ -15,10 +15,10 @@ object Whisper {
 
     println("Pre-creating actors...")
     val timeA = System.currentTimeMillis()
-    val lastWhisperer = system.actorOf(Props(classOf[LastWhisperer], gameOver), name = "last-whisperer")
+    val lastWhisperer = system.actorOf(Props(classOf[LastWhisperer], gameOver))
     var latestWhisperer: ActorRef = lastWhisperer
     for (i <- nWhisperers to 1 by -1) {
-      val newWhisperer = system.actorOf(Props(classOf[Whisperer], latestWhisperer), name = s"whisperer-$i")
+      val newWhisperer = system.actorOf(Props(classOf[Whisperer], latestWhisperer))
       latestWhisperer = newWhisperer
     }
     println("Ended in " + (System.currentTimeMillis() - timeA) + " ms.")
